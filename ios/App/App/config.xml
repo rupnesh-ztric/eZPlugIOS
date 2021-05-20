@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <access origin="*" />
+  
+  <feature name="CallNumber">
+    <param name="ios-package" value="CFCallNumber"/>
+  </feature>
+
+  <feature name="AppVersion">
+    <param name="ios-package" value="AppVersion"/>
+  </feature>
+
+  <feature name="AppRate">
+    <param name="ios-package" value="CDVAppRate"/>
+  </feature>
+
+  <feature name="Notification">
+    <param name="ios-package" value="CDVNotification"/>
+  </feature>
+
+  <feature name="EmailComposer">
+    <param name="ios-package" value="APPEmailComposer"/>
+  </feature>
+
+  <feature name="InAppBrowser">
+    <param name="ios-package" value="CDVWKInAppBrowser"/>
+    <param name="onload" value="true"/>
+  </feature>
+
+  <feature name="Market">
+    <param name="ios-package" value="CDVMarket"/>
+  </feature>
+
+  <feature name="NativeStorage">
+    <param name="ios-package" value="NativeStorage"/>
+  </feature>
+
+  <feature name="QRScanner">
+    <param name="ios-package" value="QRScanner"/>
+  </feature>
+
+  <feature name="RequestLocationAccuracy">
+    <param name="ios-package" value="RequestLocationAccuracy"/>
+  </feature>
+
+  <feature name="SafariViewController">
+    <param name="ios-package" value="SafariViewController"/>
+  </feature>
+
+  <feature name="OneSignalPush">
+    <param name="ios-package" value="OneSignalPush"/>
+  </feature>
+
+  
+</widget>

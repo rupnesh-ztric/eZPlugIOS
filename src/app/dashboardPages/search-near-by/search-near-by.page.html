@@ -1,0 +1,229 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button routerLink="/app/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Search Near By</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div>
+
+    <!-- <ion-button defaultHref="app/home" style="position: absolute; top: 0; left: 0; color: #2D660A;z-index: 999999999;" fill="clear" (click)="closeModal()">
+      <ion-icon style="height: 24px; width: 24px;" name="arrow-back"></ion-icon>
+    </ion-button> -->
+
+
+    <ion-fab vertical="top" horizontal="end" slot="fixed">
+      <ion-fab-button style="height: 42px; width: 42px;" (click)="geolocateMe()" color="primary">
+        <ion-icon name="locate"></ion-icon>
+      </ion-fab-button> 
+    </ion-fab>
+    <google-map [mapOptions]="mapOptions"></google-map>
+  </div>
+
+  <!-- <ion-item-divider sticky style="padding-left: 0;height: 30%;">
+    <google-map sticky [mapOptions]="mapOptions"></google-map>
+  </ion-item-divider> -->
+
+  <div>
+
+
+
+    <ion-item-divider sticky style="padding-left: 0;height: 30%;">
+      <ion-row class="range-item" style="width: 100%;">
+        <ion-col size="12">
+          <div class="range-header">
+            <span class="range-label">
+              <ion-text color="primary">Range (km)</ion-text>
+            </span>
+            <span class="range-value">
+              <ion-text color="primary">{{ valueSliderRange }}</ion-text>
+            </span>
+
+          </div>
+        </ion-col>
+        <ion-col size="12">
+          <ion-range class="range-control" [(ngModel)]="valueSliderRange" pin="true" color="primary"
+            (mouseup)="onProgressChangeEnd(valueSliderRange)" (touchend)="onProgressChangeEnd(valueSliderRange)" min="1" max="50" step="1"></ion-range>
+        </ion-col>
+      </ion-row>
+    </ion-item-divider>
+
+    <div *ngIf="siteList?.length > 0">
+      <ion-card *ngFor="let item of siteList; let i=index;" class="glass-card">
+
+
+        <ion-card-content>
+
+          <ion-row style="margin-bottom: 5px;" (click)="showDeatils(item, i)">
+            <ion-col style="padding: 0 !important;" size="9">
+              <strong>
+                <ion-text color="primary">{{item?.siteName}}</ion-text>
+              </strong>
+            </ion-col>
+            <ion-col style="padding: 0 !important; text-align: right;" size="3">
+              <span>
+                <ion-icon style="height: 20px;width: 20px;" color="primary"
+                  name="{{item.show ? 'chevron-down-circle' : 'chevron-forward-circle'}}"></ion-icon>
+
+              </span>
+            </ion-col>
+          </ion-row>
+
+          <ion-row (click)="showDeatils(item, i)">
+            <ion-col style="padding: 0 !important;" size="9">
+
+              <ion-text color="primary">{{item?.address}}</ion-text>
+            </ion-col>
+            <ion-col style="padding: 0 !important; text-align: right;" size="3">
+              <ion-text color="primary">{{item?.distance}} km</ion-text>
+            </ion-col>
+          </ion-row>
+
+
+          <ion-row *ngIf="isGroupShown(item)" color="medium">
+            <ion-item (click)="stationDetails(station)" class="inner-contents item-40px glass-card-inner" lines="none"
+              *ngFor="let station of stationList" style="margin-top: 16px;width: 100%;" color="medium">
+              <div style="width: 100%; display: flex; justify-content: space-between;">
+                <span style="display: flex;align-items: center;">
+
+                  <div [ngClass]="[ station.isAvailable && station.isConnectedToIoTHub ? 'greenGradient' : '', 
+                        !station.isAvailable && !station.isConnectedToIoTHub ? 'grayGradient' : '',
+                        !station.isAvailable && station.isConnectedToIoTHub ? 'redGradient' : '',
+                        station.isAvailable && !station.isConnectedToIoTHub ? 'grayGradient' : '']"
+                        style="height: 20px;width: 20px; margin-right: 10px; border-radius:50%"></div>
+
+                  <!-- <div [ngClass]="station.isAvailable && station.isConnectedToIoTHub ? 'greenGradient' : 'redGradient'"
+                    style="height: 20px;width: 20px; margin-right: 10px; border-radius:50%"></div> -->
+
+
+                  <ion-text color="primary" style="font-size: 15px;">{{station?.stationName}}</ion-text>
+                </span>
+              </div>
+            </ion-item>
+
+
+            <ion-item style="width: 100%;" *ngIf="!stationListError" class="inner-contents item-40px " lines="none">
+              <ion-spinner color="primary" style="text-align: center; display: block; margin: 0 auto;" name="bubbles">
+              </ion-spinner>
+            </ion-item>
+
+          </ion-row>
+
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+
+    <div *ngIf="!siteList.length && stationNoDataFound === false">
+      <ion-card *ngFor="let item of [0,1,2,3,4,5]; let i = index" size="2.7" style="text-align: center;" class="glass-card">
+        <ion-card-content>
+          <ion-row style="margin-bottom: 5px;" >
+            <ion-col style="padding: 0 !important;" size="9">
+              <strong>
+                <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              </strong>
+            </ion-col>
+            <ion-col style="padding: 0 !important; text-align: right;" size="3">
+              <span>
+                <ion-skeleton-text animated style="width: 20%; float: right;"></ion-skeleton-text>
+              </span>
+            </ion-col>
+          </ion-row>
+          <ion-row >
+            <ion-col style="padding: 0 !important;" size="9">
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+            </ion-col>
+            <ion-col style="margin-left: 0 !important; text-align: right;" size="3">
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+            </ion-col>
+          </ion-row>
+
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+    <ion-item lines="none">
+      <ion-text style="width: 100%;margin-left: 20px;font-size: 14px;color: var(--ion-color-primary-tint);"
+        *ngIf="siteList.length == 0 && stationNoDataFound === true">No site found in radius of {{valueSliderRange}} km </ion-text>
+    </ion-item>
+  </div>
+
+
+  <!-- <h3 *ngIf="stations?.length == 0" class="empty-list-message">
+    No users found for the selected filters.
+  </h3> -->
+
+</ion-content>
+
+
+
+
+
+
+
+<!-- - Does your app access any paid content or services?
+Ans -> Thought this app is Electric Vehicle Charging App, so we are collecting the charges from user for the electricity which they have used (as per Government norms)
+- What are the paid content or services?
+Ans -> We dont have any paid content but the electricity which we are using as a service, only the units consumed are payable.
+- Do individual customers pay for the content or services?
+Ans -> Customers are only payable for service, the electricity which are used during the particular charge duration.
+- If no, does a company or organization pay for the content or services?
+Ans -> No
+- If users create an account to use your app, are there fees involved?
+Ans -> No, this app is free for he end user, they will be get charged only if they Charge their vehicle from this app for the electricity consumption. 
+- How do users obtain an account?
+Ans -> They just need moblile number to create an account, and this is purely OTP base login.
+- Please explain your apps features and content in detail.
+Ans -> This application is developed for the Electronic vehicle Charging Stations, using this app user can create an account using mobile number and OTP, once account
+created user can access the app features like,
+1. User can scan the QR code (requires Camera permissionto scan QR code) which is present on the charging station, after scaning the code user can start/stop the charging station remotely, user can see the live status of units consumed and time utilised.
+2. Get nearest station to the user location (this requires Location permission) on map.
+3. User can get the history of the transactions which he/she did. -->
+
+
+
+<!-- 
+Hello Apple Review Team,
+I have gone through the message which your team has delivered to me after the submission.
+I have fix the issues which I received from your team -
+
+1. I have attach the screenshots as per the requirements.
+2. I have provided the detailed information related to camera and location usage in info.plist file ( I am deploying to app store first time, so didn't aware of the apple policies).
+
+3. Other information required - 
+
+- Does your app access any paid content or services?
+Ans -> Thought this app is Electric Vehicle Charging App, so we are collecting the charges from user for the electricity which they have used (as per Government norms)
+- What are the paid content or services?
+Ans -> We dont have any paid content but the electricity which we are using as a service, only the units consumed are payable.
+- Do individual customers pay for the content or services?
+Ans -> Customers are only payable for service, the electricity which are used during the particular charge duration.
+- If no, does a company or organization pay for the content or services?
+Ans -> No
+- If users create an account to use your app, are there fees involved?
+Ans -> No, this app is free for he end user, they will be get charged only if they Charge their vehicle from this app for the electricity consumption. 
+- How do users obtain an account?
+Ans -> They just need moblile number to create an account, and this is purely OTP base login.
+- Please explain your apps features and content in detail.
+Ans -> This application is developed for the Electronic vehicle Charging Stations, using this app user can create an account using mobile number and OTP, once account
+created user can access the app features like,
+1. User can scan the QR code (requires Camera permissionto scan QR code) which is present on the charging station, after scaning the code user can start/stop the charging station remotely, user can see the live status of units consumed and time utilised.
+2. Get nearest station to the user location (this requires Location permission) on map.
+3. User can get the history of the transactions which he/she did.
+
+
+I have attached all the information required from the team, and make the necessary changes into the app info.plist file with detailed description.
+and will submit the build 5.0
+Please review the app again.
+Thanks,
+Rupnesh Sharma -->
+
+ 
